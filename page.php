@@ -1,4 +1,4 @@
 <?php get_header(); ?>
-
-<?php get_sidebar('my_sidebar'); ?>
+<h1>hello</h1>
+<?php get_sidebar() ?>
 <?php get_footer(); ?>
