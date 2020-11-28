@@ -18,6 +18,10 @@
                 <p>keywords:<?php echo $meta_value['keywords'][0]?></p>
                 <p>robots:<?php echo $meta_value['robots'][0]?></p>
             </div>
+            <div>
+                <p>Taxonomy terms:</p>
+                <p><?php the_terms(get_the_ID(), 'types', '', '/', '')?></p>
+            </div>
         </div>
     </main>
 <?php get_footer()?>

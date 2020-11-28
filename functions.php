@@ -38,56 +38,77 @@ function register_my_widgets(){
         'after_title'=>"</h5>\n"
     ));
 }
-
-function create_post_type(){
-    register_post_type('consoles_news',
-        array(
-            'labels'=>array(
-                'name'=>'Новина',
-                'singular_name'=>'Новина',
-                'add_new'=>'Додати нову новину',
-                'add_new_item'=>'Додати новину',
-                'edit_item'=>'Редагувати',
-                'view_item'=>'Перегляд',
-                'search_items'=>'Знайти новину',
-                'not_found'=>'Не знайдено',
-                'not_found_in_trash'=>'Не знайдено в корзині',
-                'parent_item_colon'=>'',
-                'menu_name'=>'Новини та анонси',
-            ),
-            'has_archive'=>true,
-            'public'=>true,
-            'description'=>'Новини та анонси',
-
-            'publicly_queryable'=>true,
-            'exclude_from_search'=>true,
-            'show_ui'=>true,
-            'show_in_menu'=>true,
-            'show_in_admin_bar'=>true,
-            'show_in_nav_menus'=>true,
-            'show_in_rest'=>true,
-//            'rest_base'=>true,
-            'menu_position'=>4,
-            'menu_icon'=>null,
-            'hierarchical'=>false,
-            'supports'=>array('title', 'editor', 'author', 'thumbnail', 'excerpt'),
-            'taxonomies'=>array(),
-            'rewrite'=>true,
-            'query_var'=>true,
-
-        ));
+// Creating a Deals Custom Post Type
+function crunchify_deals_custom_post_type() {
+    $labels = array(
+        'name'                => __( 'Новина' ),
+        'singular_name'       => __( 'Новина'),
+        'menu_name'           => __( 'Новини та анонси'),
+        'parent_item_colon'   => __( 'Батьківська новина'),
+        'all_items'           => __( 'Всі новини'),
+        'view_item'           => __( 'Дивитись новину'),
+        'add_new_item'        => __( 'Додати нову новину'),
+        'add_new'             => __( 'Додати новину'),
+        'edit_item'           => __( 'Редагувати новину'),
+        'update_item'         => __( 'Редагувати новину'),
+        'search_items'        => __( 'Пошук новин'),
+        'not_found'           => __( 'Не знайдено'),
+        'not_found_in_trash'  => __( 'Не знайдено в корзині')
+    );
+    $args = array(
+        'label'               => __( 'consoles_news'),
+        'description'         => __( ''),
+        'labels'              => $labels,
+        'supports'            => array( 'title', 'editor', 'excerpt', 'author', 'thumbnail', 'revisions', 'custom-fields'),
+        'public'              => true,
+        'hierarchical'        => false,
+        'show_ui'             => true,
+        'show_in_menu'        => true,
+        'show_in_nav_menus'   => true,
+        'show_in_admin_bar'   => true,
+        'has_archive'         => true,
+        'can_export'          => true,
+        'exclude_from_search' => false,
+        'yarpp_support'       => true,
+        'taxonomies' 	      => array('post_tag'),
+        'publicly_queryable'  => true,
+        'capability_type'     => 'page'
+    );
+    register_post_type( 'consoles_news', $args );
 }
-add_action('init', 'create_post_type');
+add_action( 'init', 'crunchify_deals_custom_post_type', 0 );
+
+// Let us create Taxonomy for Custom Post Type
+add_action( 'init', 'crunchify_create_deals_custom_taxonomy', 0 );
+
+//create a custom taxonomy name it "type" for your posts
+function crunchify_create_deals_custom_taxonomy() {
+
+    $labels = array(
+        'name' => _x( 'Теги', 'taxonomy general name' ),
+        'singular_name' => _x( 'Тег', 'taxonomy singular name' ),
+        'search_items' =>  __( 'Пошук тега' ),
+        'all_items' => __( 'Всі теги' ),
+        'parent_item' => __( 'Батьківський тег' ),
+        'parent_item_colon' => __( 'Батьківський тег:' ),
+        'edit_item' => __( 'Редагувати тег' ),
+        'update_item' => __( 'Редагувати тег' ),
+        'add_new_item' => __( 'Додати новий тег' ),
+        'new_item_name' => __( 'Додати новий тег' ),
+        'menu_name' => __( 'Теги' ),
+    );
+
+    register_taxonomy('types',array('consoles_news'), array(
+        'hierarchical' => true,
+        'labels' => $labels,
+        'show_ui' => true,
+        'show_admin_column' => true,
+        'query_var' => true,
+        'rewrite' => array( 'slug' => 'type' ),
+    ));
+}
 
 
-//add_action( 'add_meta_boxes_'.'consoles_news', 'adding_custom_meta_boxes' );
-//function adding_custom_meta_boxes( $post ) {
-//    add_meta_box( 'my-meta-box', 'Мой метаблок', 'render_my_meta_box', 'consoles_news', 'normal', 'default' );
-//}
-//
-//function render_my_meta_box(){
-//    echo 'HTML метаблока';
-//}
 
 class_exists('Kama_Post_Meta_Box') && new Kama_Post_Meta_Box( array(
     'id'     => '_seo',
@@ -108,18 +129,3 @@ class_exists('Kama_Post_Meta_Box') && new Kama_Post_Meta_Box( array(
         ),
     ),
 ) );
-//Register Meta Box
-//function rm_register_meta_box() {
-//    add_meta_box( 'rm-meta-box-id', esc_html__( 'Мій MetaBox', 'text-domain' ), 'rm_meta_box_callback', 'consoles_news', 'advanced', 'high' );
-//}
-//add_action( 'add_meta_boxes', 'rm_register_meta_box');
-//
-////Add field
-//function rm_meta_box_callback( $meta_id ) {
-//
-//    $outline = '<label for="title_field" style="width:150px; display:inline-block;">'. esc_html__('Альтернативний опис', 'text-domain') .'</label>';
-//    $title_field = get_post_meta( $meta_id->ID, 'title_field', true );
-//    $outline .= '<input type="text" name="title_field" id="title_field" class="title_field" value="'. esc_attr($title_field) .'" style="width:300px;"/>';
-//
-//    echo $outline;
-//}
