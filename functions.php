@@ -1,5 +1,5 @@
 <?php
-
+require_once ('kama.php');
 add_action('wp_enqueue_scripts', 'load_assets');
 
 function load_assets(){
@@ -71,11 +71,55 @@ function create_post_type(){
             'menu_icon'=>null,
             'hierarchical'=>false,
             'supports'=>array('title', 'editor', 'author', 'thumbnail', 'excerpt'),
-            'taxonomies'=>array('tags'),
-
+            'taxonomies'=>array(),
             'rewrite'=>true,
             'query_var'=>true,
 
         ));
 }
 add_action('init', 'create_post_type');
+
+
+//add_action( 'add_meta_boxes_'.'consoles_news', 'adding_custom_meta_boxes' );
+//function adding_custom_meta_boxes( $post ) {
+//    add_meta_box( 'my-meta-box', 'Мой метаблок', 'render_my_meta_box', 'consoles_news', 'normal', 'default' );
+//}
+//
+//function render_my_meta_box(){
+//    echo 'HTML метаблока';
+//}
+
+class_exists('Kama_Post_Meta_Box') && new Kama_Post_Meta_Box( array(
+    'id'     => '_seo',
+    'post_type'=>'consoles_news',
+    'title'  => 'SEO поля',
+    'fields' => array(
+        'title' => array(
+            'type'=>'text',    'title'=>'Title',       'desc'=>'Заголовок страницы (рекомендуется 70 символов)', 'attr'=>'style="width:99%;"'
+        ),
+        'description' => array(
+            'type'=>'textarea','title'=>'Description', 'desc'=>'Описание страницы (рекомендуется 160 символов)', 'attr'=>'style="width:99%;"'
+        ),
+        'keywords' => array(
+            'type'=>'text',    'title'=>'Keywords',    'desc'=>'Ключевые слова для записи',       'attr'=>'style="width:99%;"'
+        ),
+        'robots' => array(
+            'type'=>'radio',   'title'=>'Robots',      'options' => array(''=>'index,follow', 'noindex,nofollow'=>'noindex,nofollow')
+        ),
+    ),
+) );
+//Register Meta Box
+//function rm_register_meta_box() {
+//    add_meta_box( 'rm-meta-box-id', esc_html__( 'Мій MetaBox', 'text-domain' ), 'rm_meta_box_callback', 'consoles_news', 'advanced', 'high' );
+//}
+//add_action( 'add_meta_boxes', 'rm_register_meta_box');
+//
+////Add field
+//function rm_meta_box_callback( $meta_id ) {
+//
+//    $outline = '<label for="title_field" style="width:150px; display:inline-block;">'. esc_html__('Альтернативний опис', 'text-domain') .'</label>';
+//    $title_field = get_post_meta( $meta_id->ID, 'title_field', true );
+//    $outline .= '<input type="text" name="title_field" id="title_field" class="title_field" value="'. esc_attr($title_field) .'" style="width:300px;"/>';
+//
+//    echo $outline;
+//}

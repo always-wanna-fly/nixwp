@@ -9,10 +9,15 @@
             </div>
             <div class="description">
                 <p><?php the_content();?></p>
-                
+                <?php $meta_value = get_post_meta( get_the_ID(), '', true ); ?>
             </div>
-
+            <div>
+                <p>Metaboxes:</p>
+                <p>title:<?php echo $meta_value['title'][0]?></p>
+                <p>description:<?php echo $meta_value['description'][0]?></p>
+                <p>keywords:<?php echo $meta_value['keywords'][0]?></p>
+                <p>robots:<?php echo $meta_value['robots'][0]?></p>
+            </div>
         </div>
     </main>
-
 <?php get_footer()?>
