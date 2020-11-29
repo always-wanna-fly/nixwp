@@ -4,6 +4,7 @@ add_action('wp_enqueue_scripts', 'load_assets');
 
 function load_assets(){
     wp_enqueue_script('bootstrap-js', get_template_directory_uri().'/assets/js/bootstrap.js');
+    wp_enqueue_script('main_js', get_template_directory_uri().'/assets/js/main.js', NULL, 1.0, true);
     wp_enqueue_style('bootstrap-css', get_template_directory_uri().'/assets/css/bootstrap.css');
     wp_enqueue_style('default-css', get_template_directory_uri().'/assets/css/style.css');
 }
@@ -129,3 +130,51 @@ class_exists('Kama_Post_Meta_Box') && new Kama_Post_Meta_Box( array(
         ),
     ),
 ) );
+
+//add_shortcode('my_short', 'short_function');
+//
+//function short_function(){
+//    return 'shortcode here';
+//}
+add_shortcode('my_short', 'short_function');
+function short_function($atts)
+{
+    $atts = shortcode_atts([
+        'numberposts' => 10,
+        'orderby'     => 'date',
+        'order'       => 'DESC'
+    ], $atts);
+
+    $posts = get_posts( array(
+        'numberposts' => $atts['numberposts'],
+        'orderby'     => $atts['orderby'],
+        'order'       => $atts['order'],
+        'post_type'   => 'consoles_news'
+    ) );
+
+    $out = '<div class="slider__wrapper">';
+
+
+    foreach ($posts as $post):
+        setup_postdata($post);
+
+        $out .= '<div class="slider__item">
+
+                
+                <a href="'.get_the_permalink($post->ID).'"> '.get_the_post_thumbnail($post->ID).' </a>
+                
+                
+        </div>';
+
+    endforeach;
+
+
+    $out .= '</div>
+<a class="slider__control slider__control_left" href="#" role="button"></a>
+        <a class="slider__control slider__control_right slider__control_show" href="#" role="button"></a>';
+
+
+    wp_reset_postdata();
+
+    return $out;
+}

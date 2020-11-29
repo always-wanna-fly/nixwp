@@ -7,7 +7,8 @@
             <div class="image">
                 <?php the_post_thumbnail(); ?>
             </div>
-            <div class="description">
+
+            <div class="container">
                 <p><?php the_content();?></p>
                 <?php $meta_value = get_post_meta( get_the_ID(), '', true ); ?>
             </div>
@@ -24,4 +25,7 @@
             </div>
         </div>
     </main>
+
+
+
 <?php get_footer()?>

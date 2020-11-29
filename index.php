@@ -1,4 +1,23 @@
 <?php get_header(); ?>
+<!--    <div class="slider">-->
+<!--        --><?php //echo do_shortcode('[my_short]') ?>
+<!--    </div>-->
+
+
+
+    <div class="slider">
+
+            <?php echo do_shortcode('[my_short]') ?>
+<!--            <div class="slider__item">-->
+<!--                <div style="height: 250px; background: orange;">1</div>-->
+<!--            </div>-->
+
+
+    </div>
+
+
+
+
     <main>
         <div class="container">
             <div class="row">

@@ -22,12 +22,8 @@ while($loop->have_posts()) : $loop->the_post();?>
             </div>
         </div>
 
-
-
     </main>
 <?php
-//    the_title();
-//    the_content();
     endwhile;
 ?>
 
