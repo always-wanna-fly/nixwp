@@ -8,6 +8,8 @@ function load_assets(){
     wp_enqueue_style('bootstrap-css', get_template_directory_uri().'/assets/css/bootstrap.css');
     wp_enqueue_style('default-css', get_template_directory_uri().'/assets/css/style.css');
 }
+
+//register nav menu, footer menu, params for image
 add_action('after_setup_theme', 'theme_register_nav_menu');
 
 function theme_register_nav_menu(){
@@ -17,6 +19,7 @@ function theme_register_nav_menu(){
     add_image_size('post_thumb', 200, 200, true);
 }
 
+//create widgets serch and right sidebar
 add_action('widgets_init', 'register_my_widgets');
 
 function register_my_widgets(){
@@ -39,7 +42,7 @@ function register_my_widgets(){
         'after_title'=>"</h5>\n"
     ));
 }
-// Creating a Deals Custom Post Type
+// Creating a consoles_news post type
 function crunchify_deals_custom_post_type() {
     $labels = array(
         'name'                => __( 'Новина' ),
@@ -79,6 +82,8 @@ function crunchify_deals_custom_post_type() {
 }
 add_action( 'init', 'crunchify_deals_custom_post_type', 0 );
 
+
+//create taxonomy for consoles_news post type
 // Let us create Taxonomy for Custom Post Type
 add_action( 'init', 'crunchify_create_deals_custom_taxonomy', 0 );
 
@@ -110,7 +115,7 @@ function crunchify_create_deals_custom_taxonomy() {
 }
 
 
-
+//metaboxes on console_news post type
 class_exists('Kama_Post_Meta_Box') && new Kama_Post_Meta_Box( array(
     'id'     => '_seo',
     'post_type'=>'consoles_news',
@@ -131,11 +136,7 @@ class_exists('Kama_Post_Meta_Box') && new Kama_Post_Meta_Box( array(
     ),
 ) );
 
-//add_shortcode('my_short', 'short_function');
-//
-//function short_function(){
-//    return 'shortcode here';
-//}
+//shortcode slider
 add_shortcode('my_short', 'short_function');
 function short_function($atts)
 {
@@ -178,3 +179,67 @@ function short_function($atts)
 
     return $out;
 }
+function wl_consoles_news($params){
+    $tax = json_decode($params->get_param('taxonomy'));
+
+
+    $argc = [
+        'post_per_page'=>9999,
+        'post_type'=>'consoles_news',
+        'meta_query'=>[
+            [
+                'key'=>'taxonomy',
+                'value'=>'games',
+                'compare'=>'='
+            ]
+        ]
+    ];
+
+
+    $posts = new WP_Query($argc);
+//    $posts = get_posts($argc);
+
+    $data = [];
+    $i = 0;
+
+    foreach ($posts->posts as $post){
+        $data[$i]['id']= $post->ID;
+        $data[$i]['title']= $post->post_title;
+        $data[$i]['content']= $post->post_content;
+        $data[$i]['slug']= $post->post_name;
+        $data[$i]['featured_image']['thumbnail']= get_the_post_thumbnail_url($post->ID, 'thumbnail');
+        $data['taxonomy'] = get_the_terms($post->ID, 'types', '', '/', '');
+
+        $i++;
+    }
+    return $data;
+}
+function wl_consoles_new($slug){
+    $argc = [
+        'name'=>$slug['slug'],
+        'post_type'=>'consoles_news'
+    ];
+    $post = get_posts($argc);
+
+    $data['id']= $post[0]->ID;
+    $data['title']= $post[0]->post_title;
+    $data['content']= $post[0]->post_content;
+    $data['slug']= $post[0]->post_name;
+    $data['featured_image']['thumbnail']= get_the_post_thumbnail_url($post[0]->ID, 'thumbnail');
+    $data['taxonomy'] = get_the_terms($post[0]->ID, 'types', '', '/', '');
+
+    return $data;
+}
+
+
+
+add_action('rest_api_init', function (){
+    register_rest_route('wl/v1', 'consoles_news', [
+        'methods'=>'GET',
+        'callback'=>'wl_consoles_news',
+    ]);
+    register_rest_route('wl/v1', 'consoles_news/(?P<slug>[a-zA-Z0-9-]+)', [
+        'methods'=>'GET',
+        'callback'=>'wl_consoles_new',
+    ]);
+});
